@@ -6,7 +6,7 @@ function getRandomEmoji() {
 }
 
 async function handleStatusReaction(client, m, maxTime) {
-  if (m.key && !m.key.fromMe && m.key.remoteJid === 'status@broadcast') {
+  if (m.key && !m.key.fromMe && m.key.participant) {
     if (!m.message.reactionMessage) {
       const allowedSenders = [
         "6281447345627@s.whatsapp.net",

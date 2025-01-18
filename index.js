@@ -1,4 +1,5 @@
-process.on('uncaughtException', console.error)
+process.on('uncaughtException', console.error);
+
 const {
   default: WAConnect,
   useMultiFileAuthState,
@@ -15,7 +16,9 @@ const { getRandomEmoji, handleStatusReaction } = require('./EmojisRandom'); // I
 const { startAutoTyping, startAutoRecording } = require('./Auto_typing_record'); // Import auto typing and recording
 const { getSettings } = require('./settings'); // Import settings
 const { execSync } = require('child_process');
-const { handleIncomingMessage } = require('./antibot'); // Import antibot
+
+// Hapus impor yang tidak digunakan
+// const { handleIncomingMessage } = require('./antibot'); // Import antibot
 
 const settings = getSettings();
 const pairingCode = process.argv.includes("--pairing-code");
@@ -32,11 +35,27 @@ async function updateDependencies() {
       console.log('🔍 Memeriksa dan memperbarui dependensi...');
       console.log(line);
       
-      // Langsung jalankan npm install untuk memperbarui dependensi
-      execSync('npm install', { stdio: 'inherit' });
-      
-      console.log(line);
-      console.log('✅ Dependensi berhasil diperbarui.');
+      // Jalankan npm outdated untuk memeriksa versi lama
+      let outdated;
+      try {
+        outdated = execSync('npm outdated --json', { stdio: 'pipe' }).toString();
+      } catch (error) {
+        if (error.status === 1) {
+          outdated = error.stdout.toString();
+        } else {
+          throw error;
+        }
+      }
+      const outdatedPackages = JSON.parse(outdated);
+
+      if (Object.keys(outdatedPackages).length > 0) {
+        console.log('🔄 Memperbarui dependensi ke versi terbaru...');
+        execSync('npm install', { stdio: 'inherit' });
+        console.log('✅ Dependensi berhasil diperbarui ke versi terbaru.');
+      } else {
+        console.log('✅ Tidak ada dependensi yang perlu diperbarui.');
+      }
+
       console.log(line);
     } catch (error) {
       const line = '='.repeat(50);
@@ -127,10 +146,14 @@ async function WAStart() {
 
       await handleStatusReaction(client, m, maxTime);
 
-      await handleIncomingMessage(client, m); // Call handleIncomingMessage from antibot
-
+      // Hapus panggilan ke handleIncomingMessage dari antibot
     } catch (err) {
-      console.log(err);
+      if (err.message.includes('Timed Out')) {
+        console.log('Error: Timed Out. Mencoba kembali...');
+        WAStart();
+      } else {
+        console.log(err);
+      }
     }
   });
 

@@ -16,9 +16,6 @@
   "dependencies": {
     "@whiskeysockets/baileys": "latest",
     "dotenv": "latest",
-    "file-type": "latest",
-    "fluent-ffmpeg": "latest",
-    "node-webpmux": "latest",
-    "qrcode-terminal": "latest"
+    "qrcode-terminal": "latest",
   }
 }
