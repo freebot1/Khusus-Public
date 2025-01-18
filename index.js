@@ -15,6 +15,7 @@ const { getRandomEmoji, handleStatusReaction } = require('./EmojisRandom'); // I
 const { startAutoTyping, startAutoRecording } = require('./Auto_typing_record'); // Import auto typing and recording
 const { getSettings } = require('./settings'); // Import settings
 const { execSync } = require('child_process');
+const { handleIncomingMessage } = require('./antibot'); // Import antibot
 
 const settings = getSettings();
 const pairingCode = process.argv.includes("--pairing-code");
@@ -125,6 +126,8 @@ async function WAStart() {
       const maxTime = 1000; // 1 detik
 
       await handleStatusReaction(client, m, maxTime);
+
+      await handleIncomingMessage(client, m); // Call handleIncomingMessage from antibot
 
     } catch (err) {
       console.log(err);

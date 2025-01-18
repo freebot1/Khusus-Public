@@ -1,7 +1,7 @@
 // Owner: Wilykun
 // -------------------------------------------------------------------------
 
-// Pengaturan untuk fitur auto typing, auto recording, dan auto update dependencies
+// Pengaturan untuk fitur auto typing, auto recording, auto update dependencies, dan antibot
 // -------------------------------------------------------------------------
 const settings = {
   autoTyping: {
@@ -14,6 +14,9 @@ const settings = {
   },
   dependencyUpdate: {
     enabled: true // Mengaktifkan atau menonaktifkan fitur auto update dependencies
+  },
+  antibot: {
+    enabled: true // Mengaktifkan atau menonaktifkan fitur antibot
   }
 };
 
@@ -35,6 +38,8 @@ function getSettings() {
 //
 // dependencyUpdate: Fitur ini akan membuat sistem secara otomatis memperbarui
 // dependensi yang digunakan saat bot dijalankan.
+//
+// antibot: Fitur ini akan mendeteksi dan mengekick bot lain yang mengirim pesan di grup jika diaktifkan.
 
 // Ekspor modul
 // -------------------------------------------------------------------------
