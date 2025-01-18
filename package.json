@@ -1,7 +1,7 @@
 {
   "name": "readsw",
   "version": "1.0.0",
-  "description": "Script untuk membuat auto read status WhatsApp make baileys",
+  "description": "Huehehe",
   "main": "index.js",
   "type": "commonjs",
   "scripts": {
@@ -11,7 +11,7 @@
     "autoreadsw",
     "baileys"
   ],
-  "author": "Dika Ardnt.",
+  "author": "Wily Kun",
   "license": "MIT",
   "dependencies": {
     "@whiskeysockets/baileys": "latest",
