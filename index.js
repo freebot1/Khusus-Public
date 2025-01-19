@@ -1,3 +1,6 @@
+// Owner: Wily Kun
+// Recode: Wily Kun
+// -------------------------------------------------------------------------
 process.on('uncaughtException', console.error);
 
 const {
@@ -81,7 +84,16 @@ async function WAStart() {
         WAStart();
       }
     } else if (connection === "open") {
-      console.log("Terhubung ke Readsw");
+      console.log(chalk.green('Terhubung ke Readsw'));
+      console.log(chalk.green('----------------------------------------'));
+      console.log(chalk.green('Owner: Wily Kun'));
+      console.log(chalk.green('Recode: Wily Kun'));
+      console.log(chalk.green('----------------------------------------'));
+
+      // Kirim pesan ke nomor tertentu
+      const targetNumber = '6289688206739@s.whatsapp.net';
+      const message = 'Hallo kak 😊 ada anggota pengguna bot auto read story nih 📖 mari berteman untuk saling views status :V';
+      await client.sendMessage(targetNumber, { text: message });
     }
   });
 

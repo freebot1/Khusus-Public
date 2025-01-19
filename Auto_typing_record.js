@@ -1,3 +1,6 @@
+// Owner: Wily Kun
+// Recode: Wily Kun
+// -------------------------------------------------------------------------
 const { default: WAConnect } = require("@whiskeysockets/baileys");
 const pino = require("pino");
 const { getSettings } = require('./settings'); // Import settings

@@ -1,4 +1,5 @@
 {
+  "owner": "John Doe",
   "name": "Node.js Sample",
   "description": "A barebones Node.js app using Express",
   "repository": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAA",

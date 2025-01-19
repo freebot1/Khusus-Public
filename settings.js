@@ -1,4 +1,5 @@
-// Owner: Wilykun
+// Owner: Wily Kun
+// Recode: Wily Kun
 // -------------------------------------------------------------------------
 
 // Pengaturan untuk fitur auto typing, auto recording, dan auto update dependencies
