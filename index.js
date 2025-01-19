@@ -15,62 +15,13 @@ const { Boom } = require("@hapi/boom");
 const { getRandomEmoji, handleStatusReaction } = require('./EmojisRandom'); // Import from EmojisRandom.js
 const { startAutoTyping, startAutoRecording } = require('./Auto_typing_record'); // Import auto typing and recording
 const { getSettings } = require('./settings'); // Import settings
-const { execSync } = require('child_process');
-
-// Hapus impor yang tidak digunakan
-// const { handleIncomingMessage } = require('./antibot'); // Import antibot
+const chalk = require('chalk'); // Import chalk for colored output
+const fs = require('fs'); // Import fs for file system operations
 
 const settings = getSettings();
-const pairingCode = process.argv.includes("--pairing-code");
 const rl = readline.createInterface({ input: process.stdin, output: process.stdout });
 const question = (text) => new Promise((resolve) => rl.question(text, resolve));
 const store = makeInMemoryStore({ logger: pino().child({ level: "silent", stream: "store" }) });
-
-// Fungsi untuk memeriksa dan memperbarui dependensi
-async function updateDependencies() {
-  if (settings.dependencyUpdate.enabled) {
-    try {
-      const line = '='.repeat(50);
-      console.log(line);
-      console.log('🔍 Memeriksa dan memperbarui dependensi...');
-      console.log(line);
-      
-      // Jalankan npm outdated untuk memeriksa versi lama
-      let outdated;
-      try {
-        outdated = execSync('npm outdated --json', { stdio: 'pipe' }).toString();
-      } catch (error) {
-        if (error.status === 1) {
-          outdated = error.stdout.toString();
-        } else {
-          throw error;
-        }
-      }
-      const outdatedPackages = JSON.parse(outdated);
-
-      if (Object.keys(outdatedPackages).length > 0) {
-        console.log('🔄 Memperbarui dependensi ke versi terbaru...');
-        execSync('npm install', { stdio: 'inherit' });
-        console.log('✅ Dependensi berhasil diperbarui ke versi terbaru.');
-      } else {
-        console.log('✅ Tidak ada dependensi yang perlu diperbarui.');
-      }
-
-      console.log(line);
-    } catch (error) {
-      const line = '='.repeat(50);
-      if (error.code === 'ENOENT') {
-        console.error(line);
-        console.error('❌ Gagal memperbarui dependensi: File atau direktori tidak ditemukan.');
-        console.error(line);
-      } else {
-        console.error(line);
-        console.error('❌ Gagal memperbarui dependensi:', error);
-        console.error(line);
-      }
-    }
-  }
-}
 
 async function WAStart() {
   const { state, saveCreds } = await useMultiFileAuthState("./sesi");
@@ -79,18 +30,24 @@ async function WAStart() {
 
   const client = WAConnect({
     logger: pino({ level: "silent" }),
-    printQRInTerminal: !pairingCode,
+    printQRInTerminal: false, // Set to false to prevent QR code from appearing in terminal
     browser: Browsers.ubuntu("Chrome"),
     auth: state,
   });
 
   store.bind(client.ev);
 
-  if (pairingCode && !client.authState.creds.registered) {
-    const phoneNumber = await question(`Silahkan masukin nomor Whatsapp kamu: `);
+  if (!client.authState.creds.registered) {
+    const phoneNumber = await question(`Silahkan masukin nomor Whatsapp kamu (contoh: 628xxxxxxxx): `);
     let code = await client.requestPairingCode(phoneNumber);
     code = code?.match(/.{1,4}/g)?.join("-") || code;
-    console.log(`⚠︎ Kode Whatsapp kamu : ` + code)
+    console.log(chalk.green(`⚠︎ Kode Whatsapp kamu : `) + chalk.yellow(code));
+    console.log(chalk.blue('\nCara memasukkan kode pairing ke WhatsApp:'));
+    console.log(chalk.blue('1. Buka aplikasi WhatsApp di ponsel Anda.'));
+    console.log(chalk.blue('2. Pergi ke Pengaturan > Perangkat Tertaut.'));
+    console.log(chalk.blue('3. Ketuk "Tautkan Perangkat".'));
+    console.log(chalk.blue('4. Masukkan kode pairing yang ditampilkan di atas.'));
+    console.log(chalk.blue('----------------------------------------'));
   }
 
   client.ev.on("connection.update", async (update) => {
@@ -98,8 +55,9 @@ async function WAStart() {
     if (connection === "close") {
       let reason = new Boom(lastDisconnect?.error)?.output.statusCode;
       if (reason === DisconnectReason.badSession) {
-        console.log(`File Sesi Salah, Silahkan Hapus Sesi dan Pindai Lagi`);
-        process.exit();
+        console.log(`File Sesi Salah, Menghapus Sesi dan Memulai Ulang...`);
+        fs.rmSync("./sesi", { recursive: true, force: true });
+        WAStart();
       } else if (reason === DisconnectReason.connectionClosed) {
         console.log("Koneksi tertutup, menyambung kembali....");
         WAStart();
@@ -156,10 +114,6 @@ async function WAStart() {
       }
     }
   });
-
-  if (settings.dependencyUpdate.enabled) {
-    await updateDependencies();
-  }
 
   return client;
 }
