@@ -16,6 +16,6 @@
   "dependencies": {
     "@whiskeysockets/baileys": "latest",
     "dotenv": "latest",
-    "qrcode-terminal": "latest",
+    "qrcode-terminal": "latest"
   }
 }
